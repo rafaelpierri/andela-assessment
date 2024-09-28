@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductDto } from './dto/product.dto';
-import { Product } from './product.entity';
+import { CreateProductDto } from '../presentation/dto/create-product.dto';
+import { UpdateProductDto } from '../presentation/dto/update-product.dto';
+import { ProductDto } from '../presentation/dto/product.dto';
+import { Product } from '../infrastructure/entities/product.entity';
 import { DataSource } from 'typeorm';
-import { ProductListDto } from './dto/product-list.dto';
+import { ProductListDto } from '../presentation/dto/product-list.dto';
 
 @Injectable()
 export class ProductService {

@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, BadRequestException, Query } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { ProductService } from '../application/product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDto } from './dto/product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ValidationPipe } from '../../src/validation-pipe/validation.pipe';
 import { PaginationDto } from './dto/pagination.dto';
 import { ProductListDto } from './dto/product-list.dto';
+import { ValidationPipe } from '../../commons/pipes/validation.pipe';
 
 @ApiTags('Product Catalog')
 @Controller('products')

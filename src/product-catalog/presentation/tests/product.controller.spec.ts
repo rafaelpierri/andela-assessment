@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../app.module';
+import { AppModule } from '../../../app.module';
 import { DataSource } from 'typeorm';
 import { insertIntoProducts, productsFixture } from './product.fixture';
 

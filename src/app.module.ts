@@ -4,8 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TerminusModule } from '@nestjs/terminus';
 import { AppDataSource } from '../data-source';
-import { ProductModule } from './product/product.module';
-import { Product } from './product/product.entity';
+import { ProductCatalogModule } from './product-catalog/product-catalog.module';
+import { Product } from './product-catalog/infrastructure/entities/product.entity';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { Product } from './product/product.entity';
       entities: [Product]
     }),
     TerminusModule,
-    ProductModule
+    ProductCatalogModule
   ],
   controllers: [AppController],
   providers: [AppService],
