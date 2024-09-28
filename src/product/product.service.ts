@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDto } from './dto/product.dto';
 import { Product } from './product.entity';
 import { DataSource } from 'typeorm';
+import { ProductListDto } from './dto/product-list.dto';
 
 @Injectable()
 export class ProductService {
@@ -16,8 +17,25 @@ export class ProductService {
     return new ProductDto(await productRepository.save(product));
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll(page?: number, pageSize?: number) {
+    const productRepository = this.dataSource.getRepository(Product);
+    const take = pageSize || 10;
+    const skip = take * ((page - 1) || 0);
+
+    const [result, total] = await productRepository.findAndCount(
+      {
+        order: { name: "ASC" },
+        take: take,
+        skip: skip
+      }
+    );
+
+    return new ProductListDto(result, {
+      total,
+      page: 1,
+      perPage: take,
+      totalPages: Math.ceil(total / take)
+    });
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {

@@ -5,7 +5,7 @@ import { plainToClass } from 'class-transformer';
 @Injectable()
 export class ValidationPipe implements PipeTransform {
     async transform(value: any, { metatype }: ArgumentMetadata) {
-        if (!metatype || !metatype.prototype) {
+        if (value === undefined || !metatype || !metatype.prototype) {
             return value;
         }
 

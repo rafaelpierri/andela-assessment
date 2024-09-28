@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, BadRequestException, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDto } from './dto/product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationPipe } from '../../src/validation-pipe/validation.pipe';
+import { PaginationDto } from './dto/pagination.dto';
+import { ProductListDto } from './dto/product-list.dto';
 
 @ApiTags('Product Catalog')
 @Controller('products')
@@ -21,7 +23,7 @@ export class ProductController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Returns an error response if any required fields are missing or if the provided data fails validation.',
+    description: 'Fails if any of the required fields are missing or if the provided data fails validation.',
     type: BadRequestException,
     example: {
       "message": [
@@ -43,8 +45,37 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  @ApiOperation({ summary: 'Lists all products available.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a paginated list of all products available ordered by name in ascending order.',
+    type: ProductListDto
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Fails if the pagination query parameters are incorrect.',
+    type: BadRequestException,
+    example: {
+      "message": [
+        {
+          "target": {
+            "page": null
+          },
+          "value": null,
+          "property": "page",
+          "children": [],
+          "constraints": {
+            "min": "Page must be at least 1",
+            "isInt": "Page must be an integer"
+          }
+        }
+      ],
+      "error": "Bad Request",
+      "statusCode": 400
+    }
+  })
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.productService.findAll(paginationDto.page, paginationDto.pageSize);
   }
 
   @Get('/search')

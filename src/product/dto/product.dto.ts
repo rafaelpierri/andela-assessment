@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-class ProductData {
+export class ProductData {
     constructor(partial: Partial<ProductData>) {
         Object.assign(this, partial);
     }
