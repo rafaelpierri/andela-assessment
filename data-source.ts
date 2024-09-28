@@ -13,5 +13,5 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB,
   synchronize: false,
   logging: false,
-  migrations: [__dirname + '/migrations/*.ts'],
+  migrations: [__dirname + '/migrations/*.ts']
 });
