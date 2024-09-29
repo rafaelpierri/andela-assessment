@@ -13,10 +13,10 @@ export class SearchController {
   constructor(private readonly productService: SearchService) {}
 
   @Get('/search')
-  @ApiOperation({ summary: 'Lists all products available.' })
+  @ApiOperation({ summary: 'Searches products by name, category and price range.' })
   @ApiResponse({
     status: 200,
-    description: 'Returns a paginated list of all products available ordered by name in ascending order.',
+    description: 'Returns a paginated list of the searched products ordered by name in ascending order.',
     type: ProductListDto
   })
   @ApiResponse({
@@ -43,6 +43,6 @@ export class SearchController {
     }
   })
   findAll(@Query() pagination: PaginationDto, @Query() searchParams: SearchParamsDto) {
-    return this.productService.findAll(pagination.page, pagination.pageSize);
+    return this.productService.findAll(pagination, searchParams);
   }
 }

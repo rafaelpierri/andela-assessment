@@ -7,24 +7,48 @@ export class SearchService {
 
   constructor(readonly dataSource: DataSource) {}
 
-  async findAll(page: number = 1, pageSize: number = 10) {
+  async findAll({ page = 1, pageSize = 10 }: { page: number, pageSize: number },
+    searchParams: { category: string, minPrice: number, maxPrice: number, name: string }) {
     const take = pageSize;
     const skip = take * (page - 1);
 
-    const [products, total] = await Promise.all([
-      this.dataSource
+    const selectQuery = this.dataSource
       .createQueryBuilder()
       .select(['id', 'name', 'description', 'category', 'price', 'stock'])
-      .from('products', 'p')
-      .orderBy('p.name', 'ASC')
-      .skip(skip)
-      .take(take)
-      .getRawMany(),
-      this.dataSource
+      .from('products', 'p');
+    const countQuery = this.dataSource
       .createQueryBuilder()
       .select('COUNT(*)', 'count')
-      .from('products', 'p')
-      .getRawOne()]);
+      .from('products', 'p');
+
+    if (searchParams.category) {
+      selectQuery.andWhere('p.category = :category', { category: searchParams.category });
+      countQuery.andWhere('p.category = :category', { category: searchParams.category });
+    }
+
+    if (searchParams.minPrice) {
+      selectQuery.andWhere('p.price >= :minPrice', { minPrice: searchParams.minPrice });
+      countQuery.andWhere('p.price >= :minPrice', { minPrice: searchParams.minPrice });
+    }
+
+    if (searchParams.maxPrice) {
+      selectQuery.andWhere('p.price <= :maxPrice', { maxPrice: searchParams.maxPrice });
+      countQuery.andWhere('p.price <= :maxPrice', { maxPrice: searchParams.maxPrice });
+    }
+
+    if (searchParams.name) {
+      selectQuery.andWhere('p.name LIKE :name', { name: `${searchParams.name}%` });
+      countQuery.andWhere('p.name LIKE :name', { name: `${searchParams.name}%` });
+    }
+
+    const [products, total] = await Promise.all([
+      selectQuery
+        .orderBy('p.name', 'ASC')
+        .skip(skip)
+        .take(take)
+        .getRawMany(),
+      countQuery
+        .getRawOne()]);
 
     return new ProductListDto(products.map(product => ({
       id: parseInt(product.id),

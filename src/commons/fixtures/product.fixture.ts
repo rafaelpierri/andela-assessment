@@ -1,16 +1,3 @@
-export function toAPIResponse(result: any) {
-    return {
-        id: parseInt(result.raw[0].id),
-        name: result.raw[0].name,
-        description: result.raw[0].description,
-        category: result.raw[0].category,
-        price: result.raw[0].price,
-        stock: result.raw[0].stock,
-        createdAt: result.raw[0].created_at.toISOString(),
-        updatedAt: result.raw[0].updated_at.toISOString(),
-    };
-}
-
 export async function insertIntoProducts(dataSource, products) {
     let results = [];
     for (let product of products) {
@@ -53,8 +40,8 @@ export const productsFixture = [{
     createdAt: now,
     updatedAt: now
   }, {
-    name: "band-aid",
-    description: "caffeine and taurine",
+    name: "beer",
+    description: "ipa",
     category: "drinks",
     price: 4,
     stock: 10,

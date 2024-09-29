@@ -102,7 +102,7 @@ describe('ProductController', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body.data.map(product => product.name)).toEqual(
-          ['apple', 'band-aid', 'carrot', 'dice', 'energy drink'])
+          ['apple', 'beer', 'carrot', 'dice', 'energy drink'])
       });
     });
 

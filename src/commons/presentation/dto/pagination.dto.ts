@@ -20,7 +20,7 @@ export class PaginationDto {
   @Max(1000, { message: 'PageSize must be less than 1000' })
   @Type(() => Number)
   @ApiPropertyOptional({
-    description: 'The number of products per page.',
+    description: 'The number of products per page (at most 1000).',
     example: 10,
     minimum: 1,
   })
