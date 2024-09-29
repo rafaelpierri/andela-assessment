@@ -14,55 +14,58 @@ export function toAPIResponse(result: any) {
 export async function insertIntoProducts(dataSource, products) {
     let results = [];
     for (let product of products) {
+      const p = { ...product };
       results.push(await dataSource
         .createQueryBuilder()
         .insert()
         .into('products')
-        .values(product)
+        .values(p)
         .returning('*')
         .execute());
     }
     return results;
 }
 
+const now = new Date();
+
 export const productsFixture = [{
     name: "energy drink",
     description: "caffeine and taurine",
     category: "drinks",
-    price: 2,
+    price: 1,
     stock: 10,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: now,
+    updatedAt: now
   }, {
     name: "dice",
     description: "d20",
     category: "games",
-    price: 1,
+    price: 2,
     stock: 10,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: now,
+    updatedAt: now
   }, {
     name: "carrot",
     description: "orange carrot",
     category: "foods",
-    price: 2,
+    price: 3,
     stock: 10,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: now,
+    updatedAt: now
   }, {
     name: "band-aid",
     description: "caffeine and taurine",
     category: "drinks",
-    price: 2,
+    price: 4,
     stock: 10,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: now,
+    updatedAt: now
   }, {
     name: "apple",
     description: "healthy fruit",
     category: "fruits",
-    price: 1,
+    price: 5,
     stock: 10,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: now,
+    updatedAt: now
   }];

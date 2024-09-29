@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../../../app.module';
+import { AppModule } from '../../app.module';
 import { DataSource } from 'typeorm';
-import { insertIntoProducts, productsFixture } from './product.fixture';
+import { insertIntoProducts, productsFixture } from '../../commons/fixtures/product.fixture';
 
 describe('ProductController', () => {
   let app: INestApplication;
@@ -56,6 +56,7 @@ describe('ProductController', () => {
         });
       });
     });
+
     it('fails if query parameters are incorrect', async () => {
       await request(httpServer)
       .get('/products?page=0&pageSize=0')
@@ -93,6 +94,7 @@ describe('ProductController', () => {
         });
       });
     });
+
     it('presents products lexicographically', async () => {
       await insertIntoProducts(dataSource, productsFixture);
       await request(httpServer)
@@ -103,6 +105,7 @@ describe('ProductController', () => {
           ['apple', 'band-aid', 'carrot', 'dice', 'energy drink'])
       });
     });
+
     it('paginates the results', async () => {
       await insertIntoProducts(dataSource, productsFixture);
       await request(httpServer)
@@ -118,23 +121,11 @@ describe('ProductController', () => {
         });
       });
     });
+
     it('returns 200 and the list of available products', async () => {
-      const productFixture = {
-        name: "bottle",
-        description: "great bottle",
-        category: "things",
-        price: 2.5,
-        stock: 10,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      let result = await dataSource
-        .createQueryBuilder()
-        .insert()
-        .into('products')
-        .values(productFixture)
-        .returning('*')
-        .execute();
+      const productFixture = { ...productsFixture[0] };
+      const [result] = await insertIntoProducts(dataSource, [productFixture]);
+
       await request(httpServer)
       .get('/products')
       .expect(200)
@@ -165,13 +156,9 @@ describe('ProductController', () => {
     it('returns 200 and the recently created product upon successful request', async () => {
       let productId;
 
-      const productFixture = {
-        name: "bottle",
-        description: "great bottle",
-        category: "things",
-        price: 2.5,
-        stock: 10
-      };
+      const productFixture = { ...productsFixture[0] };
+      delete productFixture.createdAt;
+      delete productFixture.updatedAt;
 
       await request(httpServer)
         .post('/products')
@@ -264,13 +251,12 @@ describe('ProductController', () => {
   });
 
   it('returns 400 the price has more than two decimal plates', async () => {
-    const productFixture = {
-      name: "bottle",
-      description: "great bottle",
-      category: "things",
-      price: 2.555,
-      stock: 3
+    const productFixture = { 
+      ...productsFixture[0],
+      price: 2.555
     };
+    delete productFixture.createdAt;
+    delete productFixture.updatedAt;
 
     await request(httpServer)
       .post('/products')
@@ -281,11 +267,11 @@ describe('ProductController', () => {
           "message": [
             {
               "target": {
-                "name": "bottle",
-                "description": "great bottle",
-                "category": "things",
+                "name": "energy drink",
+                "description": "caffeine and taurine",
+                "category": "drinks",
                 "price": 2.555,
-                "stock": 3
+                "stock": 10
               },
               "value": 2.555,
               "property": "price",
