@@ -7,7 +7,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Andela\'s ecommerce platform')
-    .setDescription('API documentation for the currently supported operations.')
+    .setDescription('API documentation')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

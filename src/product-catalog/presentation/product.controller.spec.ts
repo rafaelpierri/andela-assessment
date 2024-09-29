@@ -31,6 +31,158 @@ describe('ProductController', () => {
     await app.close();
   });
 
+  describe('PATCH /products/:id', () => {
+    it('returns 400 if stock is not a number', async () => {
+      let now = new Date();
+      await request(httpServer)
+      .patch('/products/1')
+      .send({ stock: "abc", updatedAt: now })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body).toEqual({
+          "message": [
+            {
+              "target": {
+                "stock": "abc",
+                "updatedAt": now.toISOString()
+              },
+              "value": "abc",
+              "property": "stock",
+              "children": [],
+              "constraints": {
+                "min": "stock must not be less than 0",
+                "isInt": "stock must be an integer number"
+              }
+            }
+          ],
+          "error": "Bad Request",
+          "statusCode": 400
+        });
+      });
+    });
+
+    it('returns 400 if stock is negative', async () => {
+      let now = new Date();
+      await request(httpServer)
+      .patch('/products/1')
+      .send({ stock: -1, updatedAt: now })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body).toEqual({
+          "message": [
+            {
+              "target": {
+                "stock": -1,
+                "updatedAt": now.toISOString()
+              },
+              "value": -1,
+              "property": "stock",
+              "children": [],
+              "constraints": {
+                "min": "stock must not be less than 0"
+              }
+            }
+          ],
+          "error": "Bad Request",
+          "statusCode": 400
+        });
+      });
+    });
+
+    it('returns 400 if updatedAt is not a date', async () => {
+      await request(httpServer)
+      .patch('/products/1')
+      .send({ stock: 1, updatedAt: "abc" })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body).toEqual({
+          "message": [
+            {
+              "target": {
+                "stock": 1,
+                "updatedAt": null
+              },
+              "value": null,
+              "property": "updatedAt",
+              "children": [],
+              "constraints": {
+                "isDate": "updatedAt must be a Date instance"
+              }
+            }
+          ],
+          "error": "Bad Request",
+          "statusCode": 400
+        });
+      });
+    });
+
+    it('returns 404 if product is not found', async () => {
+      let now = new Date();
+      await request(httpServer)
+      .patch('/products/1')
+      .send({ stock: 1, updatedAt: now })
+      .expect(404)
+      .expect((res) => {
+        expect(res.body).toEqual({
+          "message": "Could not find Prodcut with id #1.",
+          "error": "Not Found",
+          "statusCode": 404
+        });
+      });
+    });
+
+    it('returns 200 if the product has been successfully modified', async () => {
+      const [result] = await insertIntoProducts(dataSource, productsFixture);
+
+      await request(httpServer)
+      .patch(`/products/${result.raw[0].id}`)
+      .send({ stock: 100, updatedAt: result.raw[0].updated_at })
+      .expect(200)
+      .expect((res) => {
+          expect(res.body.data.id).toBe(parseInt(result.raw[0].id));
+          expect(res.body.data.name).toBe(result.raw[0].name);
+          expect(res.body.data.description).toBe(result.raw[0].description);
+          expect(res.body.data.category).toBe(result.raw[0].category);
+          expect(res.body.data.price).toBe(parseInt(result.raw[0].price));
+          expect(res.body.data.stock).toBe(100);
+          expect(new Date(res.body.data.createdAt)).toEqual(result.raw[0].created_at);
+          expect(new Date(res.body.data.updatedAt) > result.raw[0].updated_at).toBe(true);
+      });
+
+      const product = await dataSource
+      .createQueryBuilder()
+      .select('*')
+      .from('products', 'p')
+      .where('p.id = :id', { id: result.raw[0].id })
+      .getRawOne();
+
+      expect(product.id).toBe(result.raw[0].id);
+      expect(product.name).toBe(result.raw[0].name);
+      expect(product.description).toBe(result.raw[0].description);
+      expect(product.category).toBe(result.raw[0].category);
+      expect(product.price).toBe(result.raw[0].price);
+      expect(product.stock).toBe(100);
+      expect(product.created_at).toEqual(result.raw[0].created_at);
+      expect(product.updated_at > result.raw[0].updated_at).toBe(true);
+    });
+
+    it('returns 409 in case of a race condition', async () => {
+      const [result] = await insertIntoProducts(dataSource, productsFixture);
+      const aSecondAgo = new Date(result.raw[0].updated_at.getTime() - 1000);
+      await request(httpServer)
+      .patch(`/products/${result.raw[0].id}`)
+      .send({ stock: 100, updatedAt: aSecondAgo })
+      .expect(409)
+      .expect((res) => {
+        expect(res.body).toEqual({
+          "message": `Could not process the request for the Product with id #${result.raw[0].id}. Please, try again.`,
+          "error": "Conflict",
+          "statusCode": 409
+        });
+      });
+    });
+  });
+
   describe('GET /products', () => {
     it('fails if page size exceeds maximum value', async () => {
       await request(httpServer)

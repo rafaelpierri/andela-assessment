@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, BadRequestException, Query, NotFoundException, ConflictException } from '@nestjs/common';
 import { ProductService } from '../application/product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -18,12 +18,12 @@ export class ProductController {
   @ApiOperation({ summary: 'Creates a new product.' })
   @ApiResponse({
     status: 201,
-    description: 'Returns a newly created product upon successful creation.',
+    description: 'Returns the created product.',
     type: ProductDto
   })
   @ApiResponse({
     status: 400,
-    description: 'Fails if any of the required fields are missing or if the provided data fails validation.',
+    description: 'Fails if the request body is not valid.',
     type: BadRequestException,
     example: {
       "message": [
@@ -79,7 +79,56 @@ export class ProductController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @ApiOperation({ summary: 'Restocks a product.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the product after the update.',
+    type: ProductDto
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Fails if the product was not found.',
+    type: NotFoundException,
+    example: {
+      "message": "Could not find Prodcut with id #1.",
+      "error": "Not Found",
+      "statusCode": 404
+    }
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Fails if the request body is not valid.',
+    type: BadRequestException,
+    example: {
+      "message": [
+        {
+          "target": {
+            "stock": -1,
+            "updatedAt": "2024-09-28T00:52:46.316Z"
+          },
+          "value": -1,
+          "property": "stock",
+          "children": [],
+          "constraints": {
+            "min": "stock must not be less than 0"
+          }
+        }
+      ],
+      "error": "Bad Request",
+      "statusCode": 400
+    }
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Fails if a race condition is detected.',
+    type: ConflictException,
+    example: {
+      "message": `Could not process the request for the Product with id #1. Please, try again.`,
+      "error": "Conflict",
+      "statusCode": 409
+    }
+  })
+  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
+    return this.productService.update(id, updateProductDto);
   }
 }

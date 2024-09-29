@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from '../presentation/dto/create-product.dto';
 import { UpdateProductDto } from '../presentation/dto/update-product.dto';
 import { ProductDto } from '../presentation/dto/product.dto';
@@ -39,7 +39,20 @@ export class ProductService {
     });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) throw new NotFoundException(`Could not find Prodcut with id #${id}.`);
+
+    product.stock = updateProductDto.stock;
+
+    const result = await this.productRepository
+      .update({ id, updatedAt: updateProductDto.updatedAt }, product);
+
+    if (result.affected == 0) {
+      throw new ConflictException(`Could not process the request for the Product with id #${id}. Please, try again.`);
+    }
+
+    return new ProductDto(product);
   }
 }
