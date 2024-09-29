@@ -2,27 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from '../presentation/dto/create-product.dto';
 import { UpdateProductDto } from '../presentation/dto/update-product.dto';
 import { ProductDto } from '../presentation/dto/product.dto';
-import { Product } from '../infrastructure/entities/product.entity';
-import { DataSource } from 'typeorm';
+import { Product } from '../infrastructure/product.entity';
+import { DataSource, Repository } from 'typeorm';
 import { ProductListDto } from '../presentation/dto/product-list.dto';
 
 @Injectable()
 export class ProductService {
+  productRepository: Repository<Product>;
 
-  constructor(readonly dataSource: DataSource) {}
-
-  async create(createProductDto: CreateProductDto): Promise<ProductDto> {
-    const productRepository = this.dataSource.getRepository(Product);
-    const product = productRepository.create(createProductDto);
-    return new ProductDto(await productRepository.save(product));
+  constructor(readonly dataSource: DataSource) {
+    this.productRepository = this.dataSource.getRepository(Product);
   }
 
-  async findAll(page?: number, pageSize?: number) {
-    const productRepository = this.dataSource.getRepository(Product);
-    const take = pageSize || 10;
-    const skip = take * ((page - 1) || 0);
+  async create(createProductDto: CreateProductDto): Promise<ProductDto> {
+    const product = this.productRepository.create(createProductDto);
+    return new ProductDto(await this.productRepository.save(product));
+  }
 
-    const [result, total] = await productRepository.findAndCount(
+  async findAll(page: number = 1, pageSize: number = 10) {
+    const take = pageSize;
+    const skip = take * (page - 1);
+
+    const [result, total] = await this.productRepository.findAndCount(
       {
         order: { name: "ASC" },
         take: take,
@@ -32,7 +33,7 @@ export class ProductService {
 
     return new ProductListDto(result, {
       total,
-      page: 1,
+      page,
       perPage: take,
       totalPages: Math.ceil(total / take)
     });

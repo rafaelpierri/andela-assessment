@@ -109,8 +109,13 @@ describe('ProductController', () => {
       .get('/products?page=2&pageSize=2')
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.map(product => product.name)).toEqual(
-          ['carrot', 'dice'])
+        expect(res.body.data.map(product => product.name)).toEqual(['carrot', 'dice']);
+        expect(res.body.meta).toEqual({
+          page: 2,
+          perPage: 2,
+          total: 5,
+          totalPages: 3
+        });
       });
     });
     it('returns 200 and the list of available products', async () => {
@@ -140,7 +145,7 @@ describe('ProductController', () => {
             name: result.raw[0].name,
             description: result.raw[0].description,
             category: result.raw[0].category,
-            price: result.raw[0].price,
+            price: parseFloat(result.raw[0].price),
             stock: result.raw[0].stock,
             createdAt: result.raw[0].created_at.toISOString(),
             updatedAt: result.raw[0].updated_at.toISOString(),
