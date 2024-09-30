@@ -3,7 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../../app.module';
 import { DataSource } from 'typeorm';
-import { insertIntoProducts, productsFixture } from '../../../commons/fixtures/product.fixture';
+import {
+  insertIntoProducts,
+  productsFixture,
+} from '../../../commons/fixtures/product.fixture';
 
 describe('OrderController', () => {
   let app: INestApplication;
@@ -21,11 +24,9 @@ describe('OrderController', () => {
     httpServer = app.getHttpServer();
   });
 
-  afterEach(async () => dataSource
-        .createQueryBuilder()
-        .delete()
-        .from('products')
-        .execute());
+  afterEach(async () =>
+    dataSource.createQueryBuilder().delete().from('products').execute(),
+  );
 
   afterAll(async () => {
     await app.close();
@@ -39,18 +40,18 @@ describe('OrderController', () => {
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
-            "message": [
+            message: [
               {
-                "target": {},
-                "property": "items",
-                "children": [],
-                "constraints": {
-                  "isArray": "items must be an array"
-                }
-              }
+                target: {},
+                property: 'items',
+                children: [],
+                constraints: {
+                  isArray: 'items must be an array',
+                },
+              },
             ],
-            "error": "Bad Request",
-            "statusCode": 400
+            error: 'Bad Request',
+            statusCode: 400,
           });
         });
     });
@@ -62,106 +63,119 @@ describe('OrderController', () => {
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
-            "message": [
+            message: [
               {
-                "target": { "items": [{}] },
-                "value": [{}],
-                "property": "items",
-                "children": [
+                target: { items: [{}] },
+                value: [{}],
+                property: 'items',
+                children: [
                   {
-                    "target": [{}],
-                    "value": {},
-                    "property": "0",
-                    "children": [
+                    target: [{}],
+                    value: {},
+                    property: '0',
+                    children: [
                       {
-                        "target": {},
-                        "property": "productId",
-                        "children": [],
-                        "constraints": {
-                          "min": "productId must not be less than 0",
-                          "isInt": "productId must be an integer number"
-                        }
+                        target: {},
+                        property: 'productId',
+                        children: [],
+                        constraints: {
+                          min: 'productId must not be less than 0',
+                          isInt: 'productId must be an integer number',
+                        },
                       },
                       {
-                        "target": {},
-                        "property": "quantity",
-                        "children": [],
-                        "constraints": {
-                          "min": "quantity must not be less than 0",
-                          "isInt": "quantity must be an integer number"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
+                        target: {},
+                        property: 'quantity',
+                        children: [],
+                        constraints: {
+                          min: 'quantity must not be less than 0',
+                          isInt: 'quantity must be an integer number',
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
-            "error": "Bad Request",
-            "statusCode": 400
+            error: 'Bad Request',
+            statusCode: 400,
           });
         });
     });
 
     it('returns 400 if the items property is an empty list', async () => {
       await request(httpServer)
-      .post('/orders')
-      .send({ items: [] })
-      .expect(400)
-      .expect((res) => {
-        expect(res.body).toEqual({
-          "message": "An order must have at least one order item.",
-          "error": "Bad Request",
-          "statusCode": 400
+        .post('/orders')
+        .send({ items: [] })
+        .expect(400)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'An order must have at least one order item.',
+            error: 'Bad Request',
+            statusCode: 400,
+          });
         });
-      });
     });
 
     it('returns 400 if any of the product ids are not unique', async () => {
       await request(httpServer)
-      .post('/orders')
-      .send({ items: [{ productId: 1, quantity: 1 }, { productId: 1, quantity: 1 }] })
-      .expect(400)
-      .expect((res) => {
-        expect(res.body).toEqual({
-          "message": "Order items must be unique.",
-          "error": "Bad Request",
-          "statusCode": 400
+        .post('/orders')
+        .send({
+          items: [
+            { productId: 1, quantity: 1 },
+            { productId: 1, quantity: 1 },
+          ],
+        })
+        .expect(400)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'Order items must be unique.',
+            error: 'Bad Request',
+            statusCode: 400,
+          });
         });
-      });
     });
 
     it('returns 409 the stock count is insufficient', async () => {
-      const results = (await insertIntoProducts(dataSource, productsFixture))
-      .map(result => result.generatedMaps[0]);
+      const results = (
+        await insertIntoProducts(dataSource, productsFixture)
+      ).map((result) => result.generatedMaps[0]);
 
       await request(httpServer)
-      .post('/orders')
-      .send({ items: [
-        { productId: parseInt(results[0].id), quantity: 1 },
-        { productId: parseInt(results[1].id), quantity: 11 }] })
-      .expect(409)
-      .expect((res) => {
-        expect(res.body).toEqual({
-          "error": "Conflict",
-          "message": `Some order items (productIds: [${results[1].id}]) exeed the products stock count.`,
-          "statusCode": 409
+        .post('/orders')
+        .send({
+          items: [
+            { productId: parseInt(results[0].id), quantity: 1 },
+            { productId: parseInt(results[1].id), quantity: 11 },
+          ],
+        })
+        .expect(409)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            error: 'Conflict',
+            message: `Some order items (productIds: [${results[1].id}]) exeed the products stock count.`,
+            statusCode: 409,
+          });
         });
-      });
     });
 
     it('returns 200 if the order could be processed', async () => {
-      const results = (await insertIntoProducts(dataSource, productsFixture))
-      .map(result => result.generatedMaps[0]);
+      const results = (
+        await insertIntoProducts(dataSource, productsFixture)
+      ).map((result) => result.generatedMaps[0]);
 
       await request(httpServer)
-      .post('/orders')
-      .send({ items: [
-        { productId: parseInt(results[0].id), quantity: 1 },
-        { productId: parseInt(results[1].id), quantity: 2 }] })
-      .expect(200)
-      .expect((res) => {
-        expect(res.body).toEqual({ message: 'Order processed sucessfully.' });
-      });
+        .post('/orders')
+        .send({
+          items: [
+            { productId: parseInt(results[0].id), quantity: 1 },
+            { productId: parseInt(results[1].id), quantity: 2 },
+          ],
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual({ message: 'Order processed sucessfully.' });
+        });
 
       const product1 = await dataSource
         .createQueryBuilder()
@@ -169,7 +183,7 @@ describe('OrderController', () => {
         .from('products', 'p')
         .where('p.id = :id', { id: results[0].id })
         .getRawOne();
-      
+
       expect(parseInt(product1.stock)).toBe(9);
 
       const product2 = await dataSource
@@ -178,7 +192,7 @@ describe('OrderController', () => {
         .from('products', 'p')
         .where('p.id = :id', { id: results[1].id })
         .getRawOne();
-      
+
       expect(parseFloat(product2.stock)).toBe(8);
     });
   });

@@ -1,44 +1,46 @@
-import { Product } from "../../product-catalog/domain/product";
+import { Product } from '../../product-catalog/domain/product';
 
-type OrderItem = { productId: number; quantity: number; }
+type OrderItem = { productId: number; quantity: number };
 
 export interface OrderAttributes {
-    items: Array<OrderItem>;
+  items: Array<OrderItem>;
 }
 
 export class Order {
-    constructor(partial: Partial<Order>) {
-        Object.assign(this, partial);
-        if (this.items.length == 0) {
-            throw new Error('An order must have at least one order item.');
-        }
-            
-        const productIds = this.items.map(item => item.productId);
-        if (productIds.length != new Set(productIds).size) {
-            throw new Error('Order items must be unique.');
-        }
+  constructor(partial: Partial<Order>) {
+    Object.assign(this, partial);
+    if (this.items.length == 0) {
+      throw new Error('An order must have at least one order item.');
     }
 
-    process(products: Map<number, Product>) {
-        const failedProducts = [];
-
-        this.items.forEach(item => {
-          const product = products.get(item.productId);
-          try {
-            product.decreaseStock(item.quantity);
-          } catch {
-            failedProducts.push(product);
-          }
-        });
-        
-        if (failedProducts.length > 0) {
-            throw new Error(`Some order items (productIds: [${failedProducts.map(p => p.id)}]) exeed the products stock count.`);
-        }
+    const productIds = this.items.map((item) => item.productId);
+    if (productIds.length != new Set(productIds).size) {
+      throw new Error('Order items must be unique.');
     }
+  }
 
-    getProductIds() {
-        return this.items.map(item => item.productId);
+  process(products: Map<number, Product>) {
+    const failedProducts = [];
+
+    this.items.forEach((item) => {
+      const product = products.get(item.productId);
+      try {
+        product.decreaseStock(item.quantity);
+      } catch {
+        failedProducts.push(product);
+      }
+    });
+
+    if (failedProducts.length > 0) {
+      throw new Error(
+        `Some order items (productIds: [${failedProducts.map((p) => p.id)}]) exeed the products stock count.`,
+      );
     }
+  }
 
-    readonly items: Array<OrderItem>
+  getProductIds() {
+    return this.items.map((item) => item.productId);
+  }
+
+  readonly items: Array<OrderItem>;
 }

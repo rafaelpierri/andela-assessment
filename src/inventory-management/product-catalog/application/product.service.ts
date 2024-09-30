@@ -6,17 +6,29 @@ import { Pagination, Product, ProductAttributes } from '../domain/product';
 export class ProductService {
   constructor(readonly productRepository: ProductRepository) {}
 
-  async create(productAttrs: Omit<ProductAttributes, 'id' | 'createdAt' | 'updatedAt'>): Promise<ProductAttributes> {
+  async create(
+    productAttrs: Omit<ProductAttributes, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<ProductAttributes> {
     return this.productRepository.create(new Product(productAttrs));
   }
 
-  async findAll(page: number = 1, pageSize: number = 10, order: "ASC" | "DESC" = "ASC"):
-  Promise<{ data: Array<ProductAttributes>, meta: Pagination }> {
+  async findAll(
+    page: number = 1,
+    pageSize: number = 10,
+    order: 'ASC' | 'DESC' = 'ASC',
+  ): Promise<{ data: Array<ProductAttributes>; meta: Pagination }> {
     return this.productRepository.findAll(page, pageSize, order);
   }
 
-  async update({ id, stock, updatedAt }: Pick<ProductAttributes, 'id' | 'stock' | 'updatedAt'>): Promise<ProductAttributes> {
-    let product = await this.productRepository.findOne(id);
+  async restock({
+    id,
+    stock,
+    updatedAt,
+  }: Pick<
+    ProductAttributes,
+    'id' | 'stock' | 'updatedAt'
+  >): Promise<ProductAttributes> {
+    const product = await this.productRepository.findOne(id);
 
     product.stock = stock;
     product.updatedAt = updatedAt;

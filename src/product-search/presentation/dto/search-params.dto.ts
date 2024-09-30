@@ -8,7 +8,8 @@ export class SearchParamsDto {
   @Min(0)
   @Type(() => Number)
   @ApiPropertyOptional({
-    description: 'The minimum price a product can have to be included in the search results.',
+    description:
+      'The minimum price a product can have to be included in the search results.',
     example: 5,
   })
   minPrice: number;
@@ -18,7 +19,8 @@ export class SearchParamsDto {
   @Min(0)
   @Type(() => Number)
   @ApiPropertyOptional({
-    description: 'The maximum price a product can have to be included in the search results.',
+    description:
+      'The maximum price a product can have to be included in the search results.',
     example: 10,
   })
   maxPrice: number;
@@ -27,7 +29,8 @@ export class SearchParamsDto {
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
-    description: 'The category the product must belong to in order to be included in the search results (exact match).',
+    description:
+      'The category the product must belong to in order to be included in the search results (exact match).',
     example: 'Computers > Peripherals > Keyboards',
   })
   category: string;
@@ -36,7 +39,8 @@ export class SearchParamsDto {
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
-    description: 'The product name must start with the specified value to be included in the search results (case sensitive).',
+    description:
+      'The product name must start with the specified value to be included in the search results (case sensitive).',
     example: 'Razer',
   })
   name: string;

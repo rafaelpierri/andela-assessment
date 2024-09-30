@@ -11,11 +11,11 @@ import { ProductSearchModule } from './product-search/product-search.module';
   imports: [
     TypeOrmModule.forRoot({
       ...AppDataSource.options,
-      entities: [ProductRow]
+      entities: [ProductRow],
     }),
     TerminusModule,
     InventoryManagementModule,
-    ProductSearchModule
+    ProductSearchModule,
   ],
   controllers: [AppController],
 })

@@ -6,9 +6,12 @@ import { ProductTable } from '../product-catalog/infrastructure/product.table';
 
 @Module({
   controllers: [OrderController],
-  providers: [OrderService, {
-    provide: ProductRepository,
-    useClass: ProductTable
-  }],
+  providers: [
+    OrderService,
+    {
+      provide: ProductRepository,
+      useClass: ProductTable,
+    },
+  ],
 })
 export class OrderProcessingModule {}

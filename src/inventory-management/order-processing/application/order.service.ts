@@ -9,10 +9,15 @@ export class OrderService {
 
   async process(orderAttrs: OrderAttributes): Promise<void> {
     const order = new Order(orderAttrs);
-    const products = await this.productRepository.findMany(order.getProductIds())
-    .then(results => results
-      .reduce((acc, product) => acc.set(product.id, product), new Map<number, Product>()));
-    
+    const products = await this.productRepository
+      .findMany(order.getProductIds())
+      .then((results) =>
+        results.reduce(
+          (acc, product) => acc.set(product.id, product),
+          new Map<number, Product>(),
+        ),
+      );
+
     order.process(products);
 
     await this.productRepository.update(Array.from(products.values()));

@@ -3,7 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
 import { DataSource } from 'typeorm';
-import { insertIntoProducts, productsFixture } from '../../commons/fixtures/product.fixture';
+import {
+  insertIntoProducts,
+  productsFixture,
+} from '../../commons/fixtures/product.fixture';
 
 describe('SearchController', () => {
   let app: INestApplication;
@@ -21,11 +24,9 @@ describe('SearchController', () => {
     httpServer = app.getHttpServer();
   });
 
-  afterEach(async () => dataSource
-    .createQueryBuilder()
-    .delete()
-    .from('products')
-    .execute());
+  afterEach(async () =>
+    dataSource.createQueryBuilder().delete().from('products').execute(),
+  );
 
   afterAll(async () => {
     await app.close();
@@ -38,21 +39,21 @@ describe('SearchController', () => {
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
-            "message": [
+            message: [
               {
-                "target": {
-                  "pageSize": 1001
+                target: {
+                  pageSize: 1001,
                 },
-                "value": 1001,
-                "property": "pageSize",
-                "children": [],
-                "constraints": {
-                  "max": "PageSize must be less than 1000"
-                }
-              }
+                value: 1001,
+                property: 'pageSize',
+                children: [],
+                constraints: {
+                  max: 'PageSize must be less than 1000',
+                },
+              },
             ],
-            "error": "Bad Request",
-            "statusCode": 400
+            error: 'Bad Request',
+            statusCode: 400,
           });
         });
     });
@@ -63,34 +64,34 @@ describe('SearchController', () => {
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
-            "message": [
+            message: [
               {
-                "target": {
-                  "page": 0,
-                  "pageSize": 0
+                target: {
+                  page: 0,
+                  pageSize: 0,
                 },
-                "value": 0,
-                "property": "page",
-                "children": [],
-                "constraints": {
-                  "min": "Page must be at least 1"
-                }
+                value: 0,
+                property: 'page',
+                children: [],
+                constraints: {
+                  min: 'Page must be at least 1',
+                },
               },
               {
-                "target": {
-                  "page": 0,
-                  "pageSize": 0
+                target: {
+                  page: 0,
+                  pageSize: 0,
                 },
-                "value": 0,
-                "property": "pageSize",
-                "children": [],
-                "constraints": {
-                  "min": "PageSize must be at least 1"
-                }
-              }
+                value: 0,
+                property: 'pageSize',
+                children: [],
+                constraints: {
+                  min: 'PageSize must be at least 1',
+                },
+              },
             ],
-            "error": "Bad Request",
-            "statusCode": 400
+            error: 'Bad Request',
+            statusCode: 400,
           });
         });
     });
@@ -101,34 +102,34 @@ describe('SearchController', () => {
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
-            "message": [
+            message: [
               {
-                "target": {
-                  "minPrice": -1,
-                  "maxPrice": -1
+                target: {
+                  minPrice: -1,
+                  maxPrice: -1,
                 },
-                "value": -1,
-                "property": "minPrice",
-                "children": [],
-                "constraints": {
-                  "min": "minPrice must not be less than 0"
-                }
+                value: -1,
+                property: 'minPrice',
+                children: [],
+                constraints: {
+                  min: 'minPrice must not be less than 0',
+                },
               },
               {
-                "target": {
-                  "minPrice": -1,
-                  "maxPrice": -1
+                target: {
+                  minPrice: -1,
+                  maxPrice: -1,
                 },
-                "value": -1,
-                "property": "maxPrice",
-                "children": [],
-                "constraints": {
-                  "min": "maxPrice must not be less than 0"
-                }
-              }
+                value: -1,
+                property: 'maxPrice',
+                children: [],
+                constraints: {
+                  min: 'maxPrice must not be less than 0',
+                },
+              },
             ],
-            "error": "Bad Request",
-            "statusCode": 400
+            error: 'Bad Request',
+            statusCode: 400,
           });
         });
     });
@@ -139,8 +140,13 @@ describe('SearchController', () => {
         .get('/products/search')
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.map(product => product.name)).toEqual(
-            ['apple', 'beer', 'carrot', 'dice', 'energy drink'])
+          expect(res.body.data.map((product) => product.name)).toEqual([
+            'apple',
+            'beer',
+            'carrot',
+            'dice',
+            'energy drink',
+          ]);
         });
     });
 
@@ -150,13 +156,16 @@ describe('SearchController', () => {
         .get('/products/search?maxPrice=3')
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.map(product => product.name))
-            .toEqual(['carrot', 'dice', 'energy drink']);
+          expect(res.body.data.map((product) => product.name)).toEqual([
+            'carrot',
+            'dice',
+            'energy drink',
+          ]);
           expect(res.body.meta).toEqual({
             page: 1,
             perPage: 10,
             total: 3,
-            totalPages: 1
+            totalPages: 1,
           });
         });
     });
@@ -167,13 +176,16 @@ describe('SearchController', () => {
         .get('/products/search?minPrice=3')
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.map(product => product.name))
-            .toEqual(['apple', 'beer', 'carrot']);
+          expect(res.body.data.map((product) => product.name)).toEqual([
+            'apple',
+            'beer',
+            'carrot',
+          ]);
           expect(res.body.meta).toEqual({
             page: 1,
             perPage: 10,
             total: 3,
-            totalPages: 1
+            totalPages: 1,
           });
         });
     });
@@ -184,12 +196,15 @@ describe('SearchController', () => {
         .get('/products/search?category=drinks')
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.map(product => product.name)).toEqual(['beer', 'energy drink']);
+          expect(res.body.data.map((product) => product.name)).toEqual([
+            'beer',
+            'energy drink',
+          ]);
           expect(res.body.meta).toEqual({
             page: 1,
             perPage: 10,
             total: 2,
-            totalPages: 1
+            totalPages: 1,
           });
         });
     });
@@ -200,12 +215,14 @@ describe('SearchController', () => {
         .get('/products/search?name=car')
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.map(product => product.name)).toEqual(['carrot']);
+          expect(res.body.data.map((product) => product.name)).toEqual([
+            'carrot',
+          ]);
           expect(res.body.meta).toEqual({
             page: 1,
             perPage: 10,
             total: 1,
-            totalPages: 1
+            totalPages: 1,
           });
         });
     });
@@ -216,27 +233,30 @@ describe('SearchController', () => {
         .get('/products/search?page=2&pageSize=2')
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.map(product => product.name)).toEqual(['carrot', 'dice']);
+          expect(res.body.data.map((product) => product.name)).toEqual([
+            'carrot',
+            'dice',
+          ]);
           expect(res.body.meta).toEqual({
             page: 2,
             perPage: 2,
             total: 5,
-            totalPages: 3
+            totalPages: 3,
           });
         });
     });
 
     it('returns 200 and the list of available products', async () => {
       const productFixture = {
-        name: "bottle",
-        description: "great bottle",
-        category: "things",
+        name: 'bottle',
+        description: 'great bottle',
+        category: 'things',
         price: 2.5,
         stock: 10,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      let result = await dataSource
+      const result = await dataSource
         .createQueryBuilder()
         .insert()
         .into('products')
@@ -248,20 +268,22 @@ describe('SearchController', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body).toEqual({
-            data: [{
-              id: parseInt(result.raw[0].id),
-              name: result.raw[0].name,
-              description: result.raw[0].description,
-              category: result.raw[0].category,
-              price: parseFloat(result.raw[0].price),
-              stock: parseInt(result.raw[0].stock),
-            }],
+            data: [
+              {
+                id: parseInt(result.raw[0].id),
+                name: result.raw[0].name,
+                description: result.raw[0].description,
+                category: result.raw[0].category,
+                price: parseFloat(result.raw[0].price),
+                stock: parseInt(result.raw[0].stock),
+              },
+            ],
             meta: {
               page: 1,
               perPage: 10,
               total: 1,
               totalPages: 1,
-            }
+            },
           });
         });
     });
