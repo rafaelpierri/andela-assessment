@@ -142,7 +142,7 @@ describe('OrderController', () => {
       .expect(409)
       .expect((res) => {
         expect(res.body).toEqual({
-          "message": "Some order items exeed the products stock value.",
+          "message": "Some order items exeed the products stock count.",
           "order": {
             "items": [
               {

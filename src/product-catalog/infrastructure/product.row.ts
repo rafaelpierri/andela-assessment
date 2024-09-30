@@ -2,7 +2,11 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { ColumnNumericTransformer } from './column-numeric.transformer';
 
 @Entity('products')
-export class Product {
+export class ProductRow {
+    constructor(partial: Partial<ProductRow>) {
+        Object.assign(this, partial);
+    }
+
     @PrimaryGeneratedColumn()
     id: number;
 

@@ -5,13 +5,13 @@ import { TerminusModule } from '@nestjs/terminus';
 import { AppDataSource } from '../data-source';
 import { ProductCatalogModule } from './product-catalog/product-catalog.module';
 import { ProductSearchModule } from './product-search/product-search.module';
-import { Product } from './product-catalog/infrastructure/product.entity';
+import { ProductRow } from './product-catalog/infrastructure/product.row';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       ...AppDataSource.options,
-      entities: [Product]
+      entities: [ProductRow]
     }),
     TerminusModule,
     ProductCatalogModule,
