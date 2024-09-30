@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ProductData } from "./product.dto";
-import { PaginationMetadata } from "../../../../commons/presentation/dto/pagination-metadata";
+import { PaginationDto } from "../../../../commons/presentation/dto/pagination.dto";
 
 export class ProductListDto {
     @ApiProperty({
@@ -11,10 +11,10 @@ export class ProductListDto {
     data: ProductData[];
     @ApiProperty({
         description: 'Metadata about pagination.',
-        type: PaginationMetadata,
+        type: PaginationDto,
         required: false,
     })
-    meta: PaginationMetadata;
+    meta: PaginationDto;
 
     constructor(products: Array<{
         id: number;
@@ -25,8 +25,8 @@ export class ProductListDto {
         stock: number;
         createdAt: Date;
         updatedAt: Date;
-    }>, meta: Partial<PaginationMetadata>) {
+    }>, meta: Partial<PaginationDto>) {
         this.data = products.map(product => new ProductData(product));
-        this.meta = new PaginationMetadata(meta);
+        this.meta = new PaginationDto(meta);
     }
 }

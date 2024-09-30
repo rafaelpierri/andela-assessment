@@ -1,5 +1,11 @@
 import { Product } from "../../product-catalog/domain/product";
 
+type OrderItem = { productId: number; quantity: number; }
+
+export interface OrderAttributes {
+    items: Array<OrderItem>;
+}
+
 export class Order {
     constructor(partial: Partial<Order>) {
         Object.assign(this, partial);
@@ -34,5 +40,5 @@ export class Order {
         return this.items.map(item => item.productId);
     }
 
-    readonly items: Array<{ productId: number; quantity: number; }>
+    readonly items: Array<OrderItem>
 }

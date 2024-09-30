@@ -3,7 +3,7 @@ import { SearchService } from '../application/search.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProductListDto } from './dto/product-list.dto';
 import { ValidationPipe } from '../../commons/pipes/validation.pipe';
-import { PaginationDto } from '../../commons/presentation/dto/pagination.dto';
+import { PaginationQueryDto } from '../../commons/presentation/dto/pagination-query.dto';
 import { SearchParamsDto } from './dto/search-params.dto';
 
 @ApiTags('Product Search')
@@ -42,7 +42,7 @@ export class SearchController {
       "statusCode": 400
     }
   })
-  findAll(@Query() pagination: PaginationDto, @Query() searchParams: SearchParamsDto) {
+  findAll(@Query() pagination: PaginationQueryDto, @Query() searchParams: SearchParamsDto) {
     return this.productService.findAll(pagination, searchParams);
   }
 }

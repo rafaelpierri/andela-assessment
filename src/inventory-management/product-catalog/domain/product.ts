@@ -1,5 +1,23 @@
+export interface Pagination {
+    page: number;
+    perPage: number;
+    total: number;
+    totalPages: number;
+}
+
+export interface ProductAttributes {
+    id: number;
+    name: string;
+    description: string;
+    category: string;
+    price: number;
+    stock: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export class Product {
-    constructor(partial: Partial<Product>) {
+    constructor(partial: Partial<ProductAttributes>) {
         Object.assign(this, partial);
     }
 

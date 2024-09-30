@@ -4,7 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDto } from './dto/product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationDto } from '../../../commons/presentation/dto/pagination.dto';
+import { PaginationQueryDto } from '../../../commons/presentation/dto/pagination-query.dto';
 import { ProductListDto } from './dto/product-list.dto';
 import { ValidationPipe } from '../../../commons/pipes/validation.pipe';
 
@@ -40,8 +40,8 @@ export class ProductController {
       "statusCode": 400
     }
   })
-  create(@Body() createProductDto: CreateProductDto): Promise<ProductDto> {
-    return this.productService.create(createProductDto);
+  async create(@Body() createProductDto: CreateProductDto): Promise<ProductDto> {
+    return new ProductDto(await this.productService.create(createProductDto));
   }
 
   @Get()
@@ -74,7 +74,7 @@ export class ProductController {
       "statusCode": 400
     }
   })
-  findAll(@Query() paginationDto: PaginationDto) {
+  findAll(@Query() paginationDto: PaginationQueryDto): Promise<ProductListDto> {
     return this.productService.findAll(paginationDto.page, paginationDto.pageSize);
   }
 
@@ -128,10 +128,10 @@ export class ProductController {
       "statusCode": 409
     }
   })
-  async update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
+  async update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto): Promise<ProductDto> {
     let product;
     try {
-      product = await this.productService.update(id, updateProductDto);
+      product = await this.productService.update({id, ...updateProductDto});
     } catch (error) {
       if (error.message.startsWith('Could not find Prodcut with id')) {
         throw new NotFoundException(error.message);
@@ -142,6 +142,6 @@ export class ProductController {
       }
     }
 
-    return product;
+    return new ProductDto(product);
   }
 }
