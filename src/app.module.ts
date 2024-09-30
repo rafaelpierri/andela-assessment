@@ -3,9 +3,9 @@ import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TerminusModule } from '@nestjs/terminus';
 import { AppDataSource } from '../data-source';
-import { ProductCatalogModule } from './product-catalog/product-catalog.module';
+import { ProductRow } from './inventory-management/product-catalog/infrastructure/product.row';
+import { InventoryManagementModule } from './inventory-management/inventory-management.module';
 import { ProductSearchModule } from './product-search/product-search.module';
-import { ProductRow } from './product-catalog/infrastructure/product.row';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { ProductRow } from './product-catalog/infrastructure/product.row';
       entities: [ProductRow]
     }),
     TerminusModule,
-    ProductCatalogModule,
+    InventoryManagementModule,
     ProductSearchModule
   ],
   controllers: [AppController],

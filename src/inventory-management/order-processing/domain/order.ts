@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException } from "@nestjs/common";
-import { Product } from "./product";
+import { Product } from "../../product-catalog/domain/product";
 
 export class Order {
     constructor(partial: Partial<Order>) {

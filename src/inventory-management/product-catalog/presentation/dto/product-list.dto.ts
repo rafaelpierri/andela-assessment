@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ProductData } from "./product.dto";
-import { PaginationMetadata } from "../../../commons/presentation/dto/pagination-metadata";
+import { PaginationMetadata } from "../../../../commons/presentation/dto/pagination-metadata";
 
 export class ProductListDto {
     @ApiProperty({

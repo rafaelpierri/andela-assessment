@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UsePipes, BadRequestException, HttpCode, ConflictException } from '@nestjs/common';
-import { OrderDto } from './dto/order.dto';
+import { OrderDto } from './order.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ValidationPipe } from '../../commons/pipes/validation.pipe';
+import { ValidationPipe } from '../../../commons/pipes/validation.pipe';
 import { OrderService } from '../application/order.service';
 
 @ApiTags('Order Processing')

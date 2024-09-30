@@ -4,9 +4,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDto } from './dto/product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationDto } from '../../commons/presentation/dto/pagination.dto';
+import { PaginationDto } from '../../../commons/presentation/dto/pagination.dto';
 import { ProductListDto } from './dto/product-list.dto';
-import { ValidationPipe } from '../../commons/pipes/validation.pipe';
+import { ValidationPipe } from '../../../commons/pipes/validation.pipe';
 
 @ApiTags('Product Catalog')
 @Controller('products')
