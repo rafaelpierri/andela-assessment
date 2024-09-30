@@ -25,7 +25,7 @@ class OrderItemDto {
 export class OrderDto {
     @ApiProperty({
         description: 'The items present in the order.',
-        type: OrderItemDto,
+        type: [OrderItemDto],
         required: true,
     })
     @IsArray()
