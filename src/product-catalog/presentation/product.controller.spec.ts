@@ -305,7 +305,7 @@ describe('ProductController', () => {
   });
 
   describe('POST /products', () => {
-    it('returns 200 and the recently created product upon successful request', async () => {
+    it('returns 201 and the recently created product upon successful request', async () => {
       let productId;
 
       const productFixture = { ...productsFixture[0] };
@@ -343,99 +343,99 @@ describe('ProductController', () => {
       expect(parseInt(product.stock)).toBe(productFixture.stock);
       expect(product.created_at.toISOString()).toBe(product.updated_at.toISOString());
     });
-  });
 
-  it('returns 400 if any of the attributes in the request body are missing', async () => {
-    await request(httpServer)
-      .post('/products')
-      .send({})
-      .expect(400)
-      .expect((res) => {
-        expect(res.body).toEqual({
-          "message": [
-            {
-              "target": {},
-              "property": "name",
-              "children": [],
-              "constraints": {
-                "isString": "name must be a string"
-              }
-            },
-            {
-              "target": {},
-              "property": "description",
-              "children": [],
-              "constraints": {
-                "isString": "description must be a string"
-              }
-            },
-            {
-              "target": {},
-              "property": "category",
-              "children": [],
-              "constraints": {
-                "isString": "category must be a string"
-              }
-            },
-            {
-              "target": {},
-              "property": "price",
-              "children": [],
-              "constraints": {
-                "isNumber": "price must be a number conforming to the specified constraints",
-                "isPositive": "price must be a positive number",
-              }
-            },
-            {
-              "target": {},
-              "property": "stock",
-              "children": [],
-              "constraints": {
-                "isInt": "stock must be an integer number",
-                "min": "stock must not be less than 0",
-              }
-            }
-          ],
-          "error": "Bad Request",
-          "statusCode": 400
-        })
-      });
-  });
-
-  it('returns 400 the price has more than two decimal plates', async () => {
-    const productFixture = { 
-      ...productsFixture[0],
-      price: 2.555
-    };
-    delete productFixture.createdAt;
-    delete productFixture.updatedAt;
-
-    await request(httpServer)
-      .post('/products')
-      .send(productFixture)
-      .expect(400)
-      .expect((res) => {
-        expect(res.body).toEqual({
-          "message": [
-            {
-              "target": {
-                "name": "energy drink",
-                "description": "caffeine and taurine",
-                "category": "drinks",
-                "price": 2.555,
-                "stock": 10
+    it('returns 400 if any of the attributes in the request body are missing', async () => {
+      await request(httpServer)
+        .post('/products')
+        .send({})
+        .expect(400)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            "message": [
+              {
+                "target": {},
+                "property": "name",
+                "children": [],
+                "constraints": {
+                  "isString": "name must be a string"
+                }
               },
-              "value": 2.555,
-              "property": "price",
-              "children": [],
-              "constraints": {
-                "isNumber": "price must be a number conforming to the specified constraints"
+              {
+                "target": {},
+                "property": "description",
+                "children": [],
+                "constraints": {
+                  "isString": "description must be a string"
+                }
+              },
+              {
+                "target": {},
+                "property": "category",
+                "children": [],
+                "constraints": {
+                  "isString": "category must be a string"
+                }
+              },
+              {
+                "target": {},
+                "property": "price",
+                "children": [],
+                "constraints": {
+                  "isNumber": "price must be a number conforming to the specified constraints",
+                  "isPositive": "price must be a positive number",
+                }
+              },
+              {
+                "target": {},
+                "property": "stock",
+                "children": [],
+                "constraints": {
+                  "isInt": "stock must be an integer number",
+                  "min": "stock must not be less than 0",
+                }
               }
-            }
-          ],
-          "error": "Bad Request",
-          "statusCode": 400
-        })
-      });
+            ],
+            "error": "Bad Request",
+            "statusCode": 400
+          })
+        });
+    });
+
+    it('returns 400 if the price has more than two decimal plates', async () => {
+      const productFixture = {
+        ...productsFixture[0],
+        price: 2.555
+      };
+      delete productFixture.createdAt;
+      delete productFixture.updatedAt;
+
+      await request(httpServer)
+        .post('/products')
+        .send(productFixture)
+        .expect(400)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            "message": [
+              {
+                "target": {
+                  "name": "energy drink",
+                  "description": "caffeine and taurine",
+                  "category": "drinks",
+                  "price": 2.555,
+                  "stock": 10
+                },
+                "value": 2.555,
+                "property": "price",
+                "children": [],
+                "constraints": {
+                  "isNumber": "price must be a number conforming to the specified constraints"
+                }
+              }
+            ],
+            "error": "Bad Request",
+            "statusCode": 400
+          })
+        });
+    });
   });
 });
