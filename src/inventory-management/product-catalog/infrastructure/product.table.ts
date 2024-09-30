@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Product } from "../domain/product";
 import { ProductRepository } from "../domain/product.repository";
 import { DataSource, In, Repository } from "typeorm";
@@ -20,7 +20,7 @@ export class ProductTable implements ProductRepository {
     async findOne(id: number): Promise<Product> {
         const product = await this.repository.findOne({ where: { id } });
 
-        if (!product) throw new NotFoundException(`Could not find Prodcut with id #${id}.`);
+        if (!product) throw new Error(`Could not find Prodcut with id #${id}.`);
 
         return new Product(product);
     }
@@ -59,7 +59,7 @@ export class ProductTable implements ProductRepository {
               .update({ id: product.id, updatedAt: product.updatedAt }, new ProductRow(product));
 
               if (result.affected == 0) {
-                throw new ConflictException(`Could not process the request for the Product with id #${product.id}. Please, try again.`);
+                throw new Error(`Could not process the request for the Product with id #${product.id}. Please, try again.`);
               }
             }
         });

@@ -142,29 +142,9 @@ describe('OrderController', () => {
       .expect(409)
       .expect((res) => {
         expect(res.body).toEqual({
-          "message": "Some order items exeed the products stock count.",
-          "order": {
-            "items": [
-              {
-                "productId": parseInt(results[0].id),
-                "quantity": 1,
-              },
-              {
-                "productId": parseInt(results[1].id),
-                "quantity": 11,
-              },
-            ],
-          },
-          "products": [{
-            "category": "games",
-            "createdAt": results[1].createdAt.toISOString(),
-            "description": "d20",
-            "id": parseInt(results[1].id),
-            "name": "dice",
-            "price": 2,
-            "stock": 10,
-            "updatedAt": results[1].updatedAt.toISOString(),
-          }]
+          "error": "Conflict",
+          "message": `Some order items (productIds: [${results[1].id}]) exeed the products stock count.`,
+          "statusCode": 409
         });
       });
     });

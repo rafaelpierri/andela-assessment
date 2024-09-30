@@ -39,7 +39,18 @@ export class OrderController {
   })
   @HttpCode(200)
   async create(@Body() orderDto: OrderDto): Promise<{ message: String }> {
-    await this.orderService.process(orderDto);
-    return { message: 'Order processed sucessfully.' };
+    try {
+      await this.orderService.process(orderDto);
+      return { message: 'Order processed sucessfully.' };
+    } catch (error) {
+      if (error.message == 'An order must have at least one order item.'
+      || error.message == 'Order items must be unique.'
+      ) {
+        throw new BadRequestException(error.message);
+      } else if (error.message.startsWith('Some order items (productIds:')) {
+        throw new ConflictException(error.message);
+      }
+      throw error;
+    }
   }
 }

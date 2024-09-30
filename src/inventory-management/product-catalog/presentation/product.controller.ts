@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, BadRequestException, Query, NotFoundException, ConflictException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UsePipes, BadRequestException, Query, NotFoundException, ConflictException } from '@nestjs/common';
 import { ProductService } from '../application/product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -128,7 +128,20 @@ export class ProductController {
       "statusCode": 409
     }
   })
-  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(id, updateProductDto);
+  async update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
+    let product;
+    try {
+      product = await this.productService.update(id, updateProductDto);
+    } catch (error) {
+      if (error.message.startsWith('Could not find Prodcut with id')) {
+        throw new NotFoundException(error.message);
+      } else if (error.message.startsWith('Could not process the request for the Product with id #')) {
+        throw new ConflictException(error.message);
+      } else {
+        throw error;
+      }
+    }
+
+    return product;
   }
 }
