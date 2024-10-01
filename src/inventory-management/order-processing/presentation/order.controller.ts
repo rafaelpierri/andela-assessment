@@ -6,6 +6,7 @@ import {
   BadRequestException,
   HttpCode,
   ConflictException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { OrderDto } from './order.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -49,6 +50,16 @@ export class OrderController {
       statusCode: 409,
     },
   })
+  @ApiResponse({
+    status: 422,
+    description: 'Fails if any of the product ids in the order items are not found.',
+    type: UnprocessableEntityException,
+    example: {
+      message: 'Product (productId: 1) not found.',
+      error: 'Unprocessable Entity',
+      statusCode: 422,
+    },
+  })
   @HttpCode(200)
   async create(@Body() orderDto: OrderDto): Promise<{ message: string }> {
     try {
@@ -62,6 +73,8 @@ export class OrderController {
         throw new BadRequestException(error.message);
       } else if (error.message.startsWith('Some order items (productIds:')) {
         throw new ConflictException(error.message);
+      } else if (error.message.startsWith('Product (productId:')) {
+        throw new UnprocessableEntityException(error.message);
       }
       throw error;
     }

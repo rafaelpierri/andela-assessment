@@ -136,6 +136,24 @@ describe('OrderController', () => {
         });
     });
 
+    it('returns 422 if any of the product ids are not found', async () => {
+      await request(httpServer)
+        .post('/orders')
+        .send({
+          items: [
+            { productId: 1, quantity: 1 },
+          ],
+        })
+        .expect(422)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'Product (productId: 1) not found.',
+            error: 'Unprocessable Entity',
+            statusCode: 422,
+          });
+        });
+    });
+
     it('returns 409 the stock count is insufficient', async () => {
       const results = (
         await insertIntoProducts(dataSource, productsFixture)

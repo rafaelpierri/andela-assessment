@@ -24,6 +24,9 @@ export class Order {
 
     this.items.forEach((item) => {
       const product = products.get(item.productId);
+
+      if (!product) throw new Error(`Product (productId: ${item.productId}) not found.`);
+
       try {
         product.decreaseStock(item.quantity);
       } catch {
