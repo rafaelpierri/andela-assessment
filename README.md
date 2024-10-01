@@ -16,7 +16,7 @@ API docs may be found at [http://localhost:4000/api](http://localhost:4000/api).
 
 ```bash
 $ npm install
-$ docker-compose up -d
+$ docker-compose up -d postgres
 $ npm run migration:run
 ```
 
