@@ -71,7 +71,7 @@ export class ProductTable implements ProductRepository {
 
         if (result.affected == 0) {
           throw new Error(
-            `Could not process the request for the Product with id #${product.id}. Please, try again.`,
+            `Could not process the request for the Product with id #${product.id}. Check the document version (updatedAt).`,
           );
         }
       }

@@ -180,7 +180,7 @@ describe('ProductController', () => {
         .expect(409)
         .expect((res) => {
           expect(res.body).toEqual({
-            message: `Could not process the request for the Product with id #${result.raw[0].id}. Please, try again.`,
+            message: `Could not process the request for the Product with id #${result.raw[0].id}. Check the document version (updatedAt).`,
             error: 'Conflict',
             statusCode: 409,
           });

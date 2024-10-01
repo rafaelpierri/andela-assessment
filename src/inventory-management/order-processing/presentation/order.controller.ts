@@ -44,7 +44,7 @@ export class OrderController {
       'Fails if a race condition is detected or if the order quantity exceeds the product stock count.',
     type: ConflictException,
     example: {
-      message: `Could not process the request for the Product with id #1. Please, try again.`,
+      message: 'Could not process the request for the Product with id #1. Check the document version (updatedAt).',
       error: 'Conflict',
       statusCode: 409,
     },
